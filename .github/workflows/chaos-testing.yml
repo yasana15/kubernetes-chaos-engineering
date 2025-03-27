@@ -1,0 +1,23 @@
+name: Chaos Engineering Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  setup-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Kubernetes Cluster
+      uses: helm/kind-action@v1.5.0
+      with:
+        cluster_name: chaos-cluster
+        wait: 120s
+    
+    - name: Run Chaos Experiments
+      run: |
+        kubectl apply -f chaos/experiments/pod-failure.yaml
